@@ -1,0 +1,27 @@
+Readme 
+
+Configuring the environment. The steps below are for when the projct was first created. You don't need to run all of them 
+
+1. Install vagrant and VirtualBox
+2. run vagrant up - The folder where you run this on your local machine is sym linked into the VM at /vagrant
+2.1 vagrant specifies the port forwarding. we have forwarded port 8000 to 8888 so site will be available on local machine at 8888
+3. Ssh into the vagrant machine -> vagrant ssh
+4. run sudo ./postinstall.sh
+5. sudo apt-get install python-dev python-pip - if you have any errors with the provisioning site do : sudo apt-get update 
+6. Install virtualenv : sudo pip install virtualenv
+7. Create the virtualenv : virtualenv ~/trocc-venv - this needs to be in a separate folder, because the current folder is sym linked
+8. Active venv : source ~/trocc-venv/bin/activate  
+9. pip install django==1.6
+10. Project creation : django-admin.py startproject trocc
+11. Run server : python manage.py runserver 0.0.0.0:8000 - remember, we are running inside a VM
+12. Install Heroku Toolbelt : wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+13. heroku login
+14. pip freeze > requirements.txt
+15. Create Procfile : touch Procfile and insert : web: python manage.py runserver 0.0.0.0:$PORT --noreload
+16. touch .gitignore
+17. git init
+18. git add .
+19. git commit -a -m "Initial project structure"
+20. heroku create
+21. heroku keys:add ~/.ssh/id_rsa.pub 
+22. git push heroku master
