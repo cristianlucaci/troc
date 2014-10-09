@@ -1,0 +1,53 @@
+{% extends "loggedInBase.html" %}
+{% block content %}
+    <h1>Account Screen</h1>
+        <h2> Your products are:</h2>
+          <table summary="products">
+            <tr><th>Name</th><th>Price</th><th>Description</th><th>Category</th>
+            {% for product in products %}
+                {% if product %}
+                    <tr><td>{{ product.name}}</td><td>{{ product.price }}</td><td>{{ product.description}}</td><td>{{ product.categories.categoryName }}</td></tr>
+                {% endif %}
+            {% endfor %}
+           </table>
+
+        <h2>Register a new product</h2>
+
+    <form id="product_form" method="post" action=""
+            enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ product_form.non_field_errors }}
+        <div class="fieldWrapper">
+            {{ product_form.subject.errors }}
+            <label for="name">Name:</label>
+            {{ product_form.name }}
+        </div>
+        <div class="fieldWrapper">
+            {{ product_form.message.errors }}
+            <label for="description">Description:</label>
+            {{ product_form.description }}
+        </div>
+        <div class="fieldWrapper">
+            {{ product_form.sender.errors }}
+            <label for="category">Category:</label>
+            {{ product_form.categories }}
+            <div class="fieldWrapper">
+             <form id="category_form" method="post" action="post_category"
+            enctype="multipart/form-data">
+                 {{ category_form.as_p }}
+            <p><input type="submit" name ="add_category" value="Add Category" /></p>
+
+             </form>
+            </div>
+        </div>
+
+
+        <div class="fieldWrapper">
+            {{ product_form.cc_myself.errors }}
+            <label for="price">Price</label>
+            {{ product_form.price }}
+        </div>
+        <p><input type="submit" name = "add_product"value="Add Product" /></p>
+    </form>
+
+{% endblock %}
