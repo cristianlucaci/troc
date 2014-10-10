@@ -7,72 +7,60 @@ from django.shortcuts import render_to_response, render, redirect
 from django.template import RequestContext
 from .models import TroccUser, TradeForProduct, TradeInProduct
 from . import log
-from django.views.generic import ListView, FormView
+from django.views.generic import TemplateView, FormView, DetailView
 # Create your views here.
 
-class LoginUser(FormView):
+class LoginUserView(TemplateView):
     template_name = "troccusers/login.html"
-    error = False
-    form_class = TroccUserForm
-    success_url = "/my_products"
 
-    def get(self, request, *args, **kwargs):
-        return HttpResponse()
+    def __init__(self, *args, **kwargs):
+        self.error = False
+        super(LoginUserView, self).__init__(*args, **kwargs)
 
-    def form_valid(self, form):
-        username = form.instance.username
-        password = form.instance.password
+    def post(self, request):
+        username = request.POST["username"]
+        password = request.POST["password"]
 
         user = authenticate(username=username, password=password)
 
-        if user is None or user.is_active == False:
-            error = True
-        return super(LoginUser, self).form_valid(form)
+        if user is not None and user.is_active:
+            login(request, user)
+            return HttpResponseRedirect("/my_products")
+        else:
+            self.error = True
+
+        return render(
+        request = self.request,
+        template_name = self.template_name,
+        dictionary = {"error" : self.error}
+        )
+
+
+class SignUpView(FormView):
+    template_name = "troccusers/signup.html"
+    form_class = UserCreationForm
+
+    def __init__(self, *args, **kwargs):
+        self.registered = False;
+        super(SignUpView, self).__init__(*args, **kwargs)
+
+    def form_valid(self, form):
+        form.save()
+        self.registered = True
+        #return redirect to the same page with registered variable passed to the context
+        return render(
+            self.request,
+            template_name = "troccusers/signup.html",
+            dictionary = {"registered" : self.registered}
+            )
+
+    def form_invalid(self, form):
+        return super(SignUpView, self).form_invalid(form)
 
     def get_context_data(self, **kwargs):
-        context =  super(LoginUser, self).get_context_data(**kwargs)
-        context['error'] = self.error
+        context =  super(SignUpView, self).get_context_data(**kwargs)
+        context['registered'] = self.registered
         return context
-
-# def login_user(request):
-#     error = False
-#
-#     if request.POST:
-#         username = request.POST["username"]
-#         password = request.POST["password"]
-#
-#         user = authenticate(username=username, password=password)
-#
-#         if user is not None and user.is_active:
-#             login(request, user)
-#             return HttpResponseRedirect("/my_products")
-#         else:
-#             error = True
-#
-#     return render(
-#         request = request,
-#         template_name = "troccusers/login.html",
-#         dictionary = {"error" : error}
-#     )
-
-def sign_up(request):
-    registered = False
-    context = RequestContext(request)
-    if request.POST:
-        user_form = UserCreationForm(data = request.POST)
-        if user_form.is_valid():
-            user_form.save()
-            registered = True
-        else:
-            print user_form.errors
-    else:
-        user_form = UserCreationForm()
-
-    return render_to_response(
-            'troccusers/signup.html',
-            {'user_form': user_form, 'registered': registered},
-            context)
-
 
 def index(request):
     return render(
@@ -81,42 +69,50 @@ def index(request):
         dictionary = {}
     )
 
-@login_required()
-def my_products(request):
-    query_dict = {"user_id": request.user.id}
-    products = TradeInProduct.objects.filter(**query_dict).order_by("name")
+class MyProductsView(DetailView):
 
-    if request.POST:
-        product_form = TradeInProductForm(request.POST)
-        category_form = CategoryForm(request.POST)
-        if "add_category" in request.POST:
-            if category_form.is_valid():
-                category_form.save()
-            else:
-                print category_form.errors
-        elif "add_product" in request.POST:
-            if product_form.is_valid():
-                product = product_form.save(user = request.user)
-                request.user.products.add(product)
-                request.user.save()
-            else:
-                print product_form.errors
-    else:
-        product_form = TradeInProductForm()
-        category_form = CategoryForm()
+    def __init__(self):
+        self.product_form = TradeInProductForm()
+        self.category_form = CategoryForm()
+        self.products = None
+        super(MyProductsView, self).__init__()
 
-    return render_to_response(
-            "troccusers/myProducts.html",
-            {
-                "username": request.user.username,
-                "products": products,
-                "product_form": product_form,
-                "category_form": category_form,
+    def get(self, request, *args, **kwargs):
+        query_dict = {"user_id": self.request.user.id}
+        self.products = TradeInProduct.objects.filter(**query_dict).order_by("name")
 
-            },
-            context_instance=RequestContext(request),
-        )
+        return render(
+                    request = request,
+                    template_name = "troccusers/myProducts.html",
+                    dictionary = {"product_form":self.product_form,
+                                  "products": self.products,
+                                  "category_form" : self.category_form}
+                )
 
+    def post(self, request):
+        #Even though it does hit the db there must be a better way
+        query_dict = {"user_id": self.request.user.id}
+        self.products = TradeInProduct.objects.filter(**query_dict).order_by("name")
+
+        self.product_form = TradeInProductForm(request.POST)
+        self.category_form = CategoryForm(request.POST)
+        if self.category_form.is_valid():
+            self.category_form.save()
+        else:
+            print self.category_form.errors
+
+        if self.product_form.is_valid():
+            self.product_form.save(user = request.user)
+        else:
+            print self.product_form.errors
+
+        return render(
+                request = request,
+                template_name = "troccusers/myProducts.html",
+                dictionary = {"product_form": self.product_form,
+                              "products": self.products,
+                              "category_form" : self.category_form}
+                )
 
 @login_required()
 def logout_user(request):

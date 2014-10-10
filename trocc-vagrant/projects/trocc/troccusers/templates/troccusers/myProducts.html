@@ -4,16 +4,16 @@
         <h2> Your products are:</h2>
           <table summary="products">
             <tr><th>Name</th><th>Price</th><th>Description</th><th>Category</th>
-            {% for product in products %}
-                {% if product %}
-                    <tr><td>{{ product.name}}</td><td>{{ product.price }}</td><td>{{ product.description}}</td><td>{{ product.categories.categoryName }}</td></tr>
-                {% endif %}
-            {% endfor %}
+                {% for product in products %}
+                    {% if product %}
+                        <tr><td>{{ product.name}}</td><td>{{ product.price }}</td><td>{{ product.description}}</td><td>{{ product.categories.categoryName }}</td></tr>
+                    {% endif %}
+                {% endfor %}
            </table>
 
         <h2>Register a new product</h2>
 
-    <form id="product_form" method="post" action=""
+    <form id="product_form" method="post" action="my_products"
             enctype="multipart/form-data">
         {% csrf_token %}
         {{ product_form.non_field_errors }}
@@ -27,20 +27,14 @@
             <label for="description">Description:</label>
             {{ product_form.description }}
         </div>
+
         <div class="fieldWrapper">
             {{ product_form.sender.errors }}
             <label for="category">Category:</label>
             {{ product_form.categories }}
-            <div class="fieldWrapper">
-             <form id="category_form" method="post" action="post_category"
-            enctype="multipart/form-data">
-                 {{ category_form.as_p }}
-            <p><input type="submit" name ="add_category" value="Add Category" /></p>
 
-             </form>
             </div>
-        </div>
-
+      </div>
 
         <div class="fieldWrapper">
             {{ product_form.cc_myself.errors }}
@@ -49,5 +43,17 @@
         </div>
         <p><input type="submit" name = "add_product"value="Add Product" /></p>
     </form>
+
+    <div class="fieldWrapper">
+
+            <div class="fieldWrapper">
+             <form id="category_form" method="post" action="">
+                 {% csrf_token %}
+                 {{ category_form.as_p }}
+            <p><input type="submit" name ="add_category" value="Add Category" /></p>
+
+             </form>
+            </div>
+      </div>
 
 {% endblock %}

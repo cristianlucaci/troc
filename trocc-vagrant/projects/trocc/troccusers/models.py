@@ -48,27 +48,21 @@ class Category(models.Model):
         return self.categoryName
 
 class Product(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255 * 10, blank=True, null=True)
-    categories = models.ManyToManyField(Category, null=True, related_name="products")
-    user = models.ForeignKey(TroccUser, related_name='products')
-
     class Meta:
         abstract = True
+
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255 * 10, blank=True, null=True)
+    categories = models.ManyToManyField(Category, null=True)
+    user = models.ForeignKey(TroccUser)
 
     def __unicode__(self):
        return self.name
 
 class TradeInProduct(Product):
-    tradeForProduct = models.ManyToManyField("TradeForProduct", null=True, blank=True)
+    tradeForProduct = models.ManyToManyField("TradeForProduct", null=True, blank=True, related_name='tradeForProducts')
     price = models.PositiveIntegerField()
 
-    @classmethod
-    def get_default(cls):
-        return TradeInProduct.objects.get_or_create(
-            name="Product",
-            price=100,
-        )[0]
 
 class TradeForProduct(Product):
     tradeInPrice = models.PositiveIntegerField(null=True, default=0, editable=False, blank=True)
