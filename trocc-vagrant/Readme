@@ -10,8 +10,10 @@ Configuring the environment. The steps below are for when the projct was first c
 5. sudo apt-get install python-dev python-pip - if you have any errors with the provisioning site do : sudo apt-get update 
 6. Install virtualenv : sudo pip install virtualenv
 7. Create the virtualenv : virtualenv ~/trocc-venv - this needs to be in a separate folder, because the current folder is sym linked
-8. Active venv : source ~/trocc-venv/bin/activate  
-9. pip install django==1.6
+8. Active venv : source ~/trocc-venv/bin/activate then cd to your working directory 
+9. sudo apt-get install postgresql libpq-dev
+9'. pip install django==1.6, dj_database_url, south, psycopg2
+9''. sudo su postgres, createuser -P, createdb trocc
 10. Project creation : django-admin.py startproject trocc
 11. Run server : python manage.py runserver 0.0.0.0:8000 - remember, we are running inside a VM
 12. Install Heroku Toolbelt : wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
