@@ -53,7 +53,7 @@ class Product(models.Model):
 
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255 * 10, blank=True, null=True)
-    categories = models.ManyToManyField(Category, null=True)
+    categories = models.ManyToManyField(Category)
     user = models.ForeignKey(TroccUser)
 
     def __unicode__(self):

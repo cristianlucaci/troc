@@ -7,7 +7,7 @@ from django.shortcuts import render_to_response, render, redirect
 from django.template import RequestContext
 from .models import TroccUser, TradeForProduct, TradeInProduct
 from . import log
-from django.views.generic import TemplateView, FormView, DetailView
+from django.views.generic import TemplateView, FormView, DetailView, CreateView
 # Create your views here.
 
 class LoginUserView(TemplateView):
@@ -90,7 +90,7 @@ class MyProductsView(DetailView):
                 )
 
     def post(self, request):
-        #Even though it does hit the db there must be a better way
+        #Even though it doesn't hit the db there must be a better way
         query_dict = {"user_id": self.request.user.id}
         self.products = TradeInProduct.objects.filter(**query_dict).order_by("name")
 
