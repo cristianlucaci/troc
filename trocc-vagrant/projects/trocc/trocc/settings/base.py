@@ -29,6 +29,8 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
+LOGIN_URL = '/login'
+
 ALLOWED_HOSTS = []
 
 # Database for Heroku

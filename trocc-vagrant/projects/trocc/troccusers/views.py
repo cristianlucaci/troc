@@ -3,7 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from .forms import UserCreationForm, TroccUserForm, TradeForProductForm, TradeInProductForm, CategoryForm
 from django.http.response import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render_to_response, render, redirect
+from django.core.urlresolvers import reverse_lazy, reverse
+from django.shortcuts import render_to_response, render, redirect, resolve_url
+from django.utils.decorators import method_decorator
 from django.template import RequestContext
 from .models import TroccUser, TradeForProduct, TradeInProduct
 from . import log
@@ -34,6 +36,12 @@ class LoginUserView(TemplateView):
         template_name = self.template_name,
         dictionary = {"error" : self.error}
         )
+
+class LoginRequiredMixin(object):
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
 
 
 class SignUpView(FormView):
@@ -69,7 +77,8 @@ def index(request):
         dictionary = {}
     )
 
-class MyProductsView(DetailView):
+class MyProductsView(LoginRequiredMixin, DetailView):
+
 
     def __init__(self):
         self.product_form = TradeInProductForm()

@@ -2,14 +2,15 @@
 {% block content %}
     <h1>Account Screen</h1>
         <h2> Your products are:</h2>
-          <table summary="products">
-            <tr><th>Name</th><th>Price</th><th>Description</th><th>Category</th>
+          <ul class="products">
                 {% for product in products %}
+                    <li>
                     {% if product %}
-                        <tr><td>{{ product.name}}</td><td>{{ product.price }}</td><td>{{ product.description}}</td><td>{{ product.categories.categoryName }}</td></tr>
+                        {{ product.name}} {{ product.price }} {{ product.description}} {{ product.categories.categoryName }}
                     {% endif %}
+                    </li>
                 {% endfor %}
-           </table>
+           </ul>
 
         <h2>Register a new product</h2>
 

@@ -3,6 +3,7 @@ import os
 __author__ = 'marianlungu'
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
