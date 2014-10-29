@@ -2,13 +2,8 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import TroccUser
-from .models import TradeInProduct
-from .models import TradeForProduct
-from .models import Category
+from troccproducts.admin import ProductInLine
 from .forms import UserCreationForm
-
-class ProductInLine(admin.TabularInline):
-    model = TradeInProduct
 
 class CustomerAdmin(admin.ModelAdmin):
     inlines = [
@@ -38,15 +33,4 @@ class UserAdmin(admin.ModelAdmin):
 
 admin.site.register(TroccUser, UserAdmin)
 
-class TradeForProductsAdmin(admin.ModelAdmin):
-    model = TradeForProduct
-
-
-admin.site.register(TradeForProduct, TradeForProductsAdmin)
-
-class CategoryAdmin(admin.ModelAdmin):
-    model = Category
-
-
-admin.site.register(Category, CategoryAdmin)
 

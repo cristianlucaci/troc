@@ -1,13 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
-from .forms import UserCreationForm, TroccUserForm, TradeForProductForm, TradeInProductForm, CategoryForm
+from .forms import UserCreationForm, TroccUserForm
 from django.http.response import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import render_to_response, render, redirect, resolve_url
-from django.utils.decorators import method_decorator
 from django.template import RequestContext
-from .models import TroccUser, TradeForProduct, TradeInProduct
+from .models import TroccUser
 from . import log
 from django.views.generic import TemplateView, FormView, DetailView, CreateView
 # Create your views here.
@@ -36,13 +35,6 @@ class LoginUserView(TemplateView):
         template_name = self.template_name,
         dictionary = {"error" : self.error}
         )
-
-class LoginRequiredMixin(object):
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
-
 
 class SignUpView(FormView):
     template_name = "troccusers/signup.html"
@@ -76,52 +68,6 @@ def index(request):
         template_name = "troccusers/main.html",
         dictionary = {}
     )
-
-class MyProductsView(LoginRequiredMixin, DetailView):
-
-
-    def __init__(self):
-        self.product_form = TradeInProductForm()
-        self.category_form = CategoryForm()
-        self.products = None
-        super(MyProductsView, self).__init__()
-
-    def get(self, request, *args, **kwargs):
-        query_dict = {"user_id": self.request.user.id}
-        self.products = TradeInProduct.objects.filter(**query_dict).order_by("name")
-
-        return render(
-                    request = request,
-                    template_name = "troccusers/myProducts.html",
-                    dictionary = {"product_form":self.product_form,
-                                  "products": self.products,
-                                  "category_form" : self.category_form}
-                )
-
-    def post(self, request):
-        #Even though it doesn't hit the db there must be a better way
-        query_dict = {"user_id": self.request.user.id}
-        self.products = TradeInProduct.objects.filter(**query_dict).order_by("name")
-
-        self.product_form = TradeInProductForm(request.POST)
-        self.category_form = CategoryForm(request.POST)
-        if self.category_form.is_valid():
-            self.category_form.save()
-        else:
-            print self.category_form.errors
-
-        if self.product_form.is_valid():
-            self.product_form.save(user = request.user)
-        else:
-            print self.product_form.errors
-
-        return render(
-                request = request,
-                template_name = "troccusers/myProducts.html",
-                dictionary = {"product_form": self.product_form,
-                              "products": self.products,
-                              "category_form" : self.category_form}
-                )
 
 @login_required()
 def logout_user(request):

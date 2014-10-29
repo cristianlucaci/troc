@@ -55,6 +55,8 @@ DJANGO_APPS = (
 
 LOCAL_APPS = (
     "troccusers",
+    "troccproducts",
+    "utils",
 )
 
 THIRD_PARTY_APPS = (
