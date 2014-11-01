@@ -52,3 +52,5 @@ class MyProductsView(LoginRequiredMixin, DetailView):
                               "products": self.products,
                               "category_form" : self.category_form}
                 )
+
+myProducts = MyProductsView.as_view()

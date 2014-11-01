@@ -4,5 +4,5 @@ from views import MyProductsView
 
 urlpatterns = patterns(
     'troccproducts.views',
-     url(r'^my_products/?$', MyProductsView.as_view()),
+     url(r'^my_products/?$', 'myProducts', name="products"),
 )

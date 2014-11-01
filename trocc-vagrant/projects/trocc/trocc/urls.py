@@ -7,7 +7,7 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'trocc.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-    url(r'^', include('troccproducts.urls')),
+    url(r'^accounts/', include('allauth.urls')),
     url(r'^', include('troccusers.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )

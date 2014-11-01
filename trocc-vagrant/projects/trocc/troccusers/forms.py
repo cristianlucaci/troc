@@ -2,7 +2,7 @@ __author__ = 'marianlungu'
 from django import forms
 from .models import TroccUser
 from . import log
-
+#Not currently used, look @adapter.py
 class TroccUserForm(forms.ModelForm):
     class Meta:
         model = TroccUser
