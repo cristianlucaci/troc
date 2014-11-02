@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 class AccountAdapter(DefaultAccountAdapter):
 
     def get_login_redirect_url(self, request):
-        return reverse('troccproducts.products')
+        return "/my_products"
 
     def new_user(self, request):
         user = TroccUser()
